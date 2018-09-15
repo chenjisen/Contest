@@ -30,6 +30,9 @@
     <ClInclude Include="RGV.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="RGV_2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -38,10 +41,10 @@
     <ClCompile Include="Contest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CNC.cpp">
+    <ClCompile Include="RGV.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="RGV.cpp">
+    <ClCompile Include="RGV_2.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

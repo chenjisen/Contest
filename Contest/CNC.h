@@ -44,16 +44,68 @@ public:
 		--workRemainTime;
 	}
 
-	void endWork();
+	void endWork()
+	{
+		if (workRemainTime == 0) {
 
 
-	void startLoad();
+			switch (state)
+			{
+			case Waitload:
+				break;
 
-	void endLoad();
+			case CNCLoad:
+				cout << "[" << currentTime << "]" << "[CNC" << Pos << "]";
+				endLoad(); break;
 
-	void startProcess();
+			case Process:
+				cout << "[" << currentTime << "]" << "[CNC" << Pos << "]";
+				endProcess(); break;
 
-	void endProcess();
+
+			default:
+				break;
+			}
+		}
+	}
+
+
+	void startLoad()
+	{
+		cout << "[CNC" << Pos << "]start load; " << endl;
+
+
+		workRemainTime = LoadTime;
+		state = CNCLoad;
+		waitLoadList->remove(this);
+	}
+
+	void endLoad()
+	{
+		cout << "end load" << endl;
+		// after loading, start processing immediately
+		cout << "[" << currentTime << "]";
+		startProcess();
+
+	}
+
+	void startProcess()
+	{
+		cout << "[CNC" << Pos << "]start process; " << endl;
+		workRemainTime = ProcessTime;
+		state = Process;
+		processList->push_back(this);
+
+	}
+
+	void endProcess()
+	{
+		cout << "end process" << endl;
+		state = Waitload;
+		processList->remove(this);
+		waitLoadList->push_back(this);
+	}
+
 
 };
 

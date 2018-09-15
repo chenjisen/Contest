@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "CNC.h"
 
 
@@ -62,9 +61,9 @@ public:
 	ofstream file;
 	int materialNumber;
 	vector<Material> currentMaterials;
-	
 
-	void init(vector<int> RGVmovetime, int cleantime, 
+
+	void init(vector<int> RGVmovetime, int cleantime,
 		list<CNC*>* _waitLoadList, list<CNC*>* _processList)
 	{
 		RGVMoveTime = RGVmovetime;
@@ -159,8 +158,8 @@ public:
 		dest->startLoad();
 		workRemainTime = dest->workRemainTime;
 		state = Load;
-		
-		
+
+
 		// write previous material
 		if (currentMaterials[pos].no != -1) {
 			// write csv
@@ -187,7 +186,7 @@ public:
 		else
 			state = Stop;   // the first time
 
-		// new material
+							// new material
 		++materialNumber;
 		currentMaterials[pos].no = materialNumber;
 
