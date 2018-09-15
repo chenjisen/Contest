@@ -149,7 +149,6 @@
   <ItemGroup>
     <ClInclude Include="CNC.h" />
     <ClInclude Include="RGV.h" />
-    <ClInclude Include="RGV_2.h" />
     <ClInclude Include="scheduling.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -157,7 +156,6 @@
   <ItemGroup>
     <ClCompile Include="Contest.cpp" />
     <ClCompile Include="RGV.cpp" />
-    <ClCompile Include="RGV_2.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

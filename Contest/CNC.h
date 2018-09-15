@@ -16,13 +16,15 @@ public:
 	int LoadTime; // load and unload time
 	int ProcessTime;
 	int workRemainTime;
+	int processType; // 0: none, 1: first process, 2: second process
+
 	CNCStateT state;
 	list<CNC*>* waitLoadList;
 	list<CNC*>* processList;
 	int currentTime;
 
 
-	void init(int pos, int loadtime, int processtime, 
+	void init(int pos, int loadtime, int processtime, int _type,
 		list<CNC*>* _waitLoadList, list<CNC*>* _processList)
 	{
 		Pos = pos;
@@ -31,6 +33,7 @@ public:
 		workRemainTime = 0;
 		waitLoadList = _waitLoadList;
 		processList = _processList;
+		processType = _type;
 
 		// init
 		state = Waitload;  

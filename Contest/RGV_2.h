@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CNC.h"
-
+#include "RGV.h"
 
 #include <fstream>
 #include <string>
@@ -9,12 +9,8 @@
 
 using namespace std;
 
-// the state of RGV: (init), stop, run, load, unload, clean
-// when loading, unloading and cleaning, RGV cannot move
-// wait is similar to stop, but the task has been distributed
-enum RGVStateT { Stop, Wait, Waitclean, Run, Load, Clean };
 
-struct Material
+struct Material_2
 {
 	int no;
 	int pos;
@@ -40,7 +36,7 @@ struct Material
 };
 
 
-class RGV
+class RGV_2
 {
 private:
 
@@ -60,7 +56,7 @@ public:
 
 	ofstream file;
 	int materialNumber;
-	vector<Material> currentMaterials;
+	vector<Material_2> currentMaterials;
 
 
 	void init(vector<int> RGVmovetime, int cleantime,
@@ -76,7 +72,7 @@ public:
 		processList = _processList;
 		file.open("data.csv", ios::out);
 		materialNumber = 0;
-		currentMaterials = vector<Material>(9);
+		currentMaterials = vector<Material_2>(9);
 		for (auto& m : currentMaterials)
 			m.clear();
 	}

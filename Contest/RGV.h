@@ -13,7 +13,8 @@ using namespace std;
 // the state of RGV: (init), stop, run, load, unload, clean
 // when loading, unloading and cleaning, RGV cannot move
 // wait is similar to stop, but the task has been distributed
-enum RGVStateT { Stop, Wait, Waitclean, Run, Load, Clean };
+// Stop_2 is used in QUESTION 2
+enum RGVStateT { Stop, Wait, Waitclean, Run, Load, Clean, Stop_2};
 
 struct Material
 {
@@ -54,18 +55,24 @@ public:
 	vector<int> RGVMoveTime;
 	int CleanTime;
 	int currentTime;
+	int processNumber; // 1: QUESTION 1, 2: QUESTION 2
+	int nextProcess;  // for QUESTION 2, 
 
 	list<CNC*>* waitLoadList;
 	list<CNC*>* processList;
 	list<CNC*>* waitUnloadList;
 
+
+
 	ofstream file;
 	int materialNumber;
 	vector<Material> currentMaterials;
+	vector<CNC>* vcnc;
 	
 
-	void init(vector<int> RGVmovetime, int cleantime, 
-		list<CNC*>* _waitLoadList, list<CNC*>* _processList)
+	void init(vector<int> RGVmovetime, int cleantime, int processnumber, 
+		list<CNC*>* _waitLoadList, list<CNC*>* _processList,
+		vector<CNC>* _vcnc)
 	{
 		RGVMoveTime = RGVmovetime;
 		CleanTime = cleantime;
@@ -73,8 +80,11 @@ public:
 		state = Stop;
 		workRemainTime = 0;
 		dest = nullptr;
+		processNumber = processnumber;
+		nextProcess = 1;
 		waitLoadList = _waitLoadList;
 		processList = _processList;
+		vcnc = _vcnc;
 		file.open("data.csv", ios::out);
 		materialNumber = 0;
 		currentMaterials = vector<Material>(9);
@@ -178,7 +188,6 @@ public:
 	void endLoad()
 	{
 		cout << "end load" << endl;
-		state = Stop;
 
 		currentMaterials[pos].endLoadTime = currentTime;
 

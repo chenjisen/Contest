@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "RGV.h"
 #include "scheduling.h"
+
  void RGV::startWork()
 {
 	if (state == Stop) {
 		cout << "[" << currentTime << "]" << "[RGV]";
 		// do job
-		dest = getDest(*waitLoadList, *processList);
+		dest = getDest(*vcnc, *this);
 		startRun();
 
 	}
