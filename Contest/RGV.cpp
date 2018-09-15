@@ -7,7 +7,10 @@
 	if (state == Stop) {
 		cout << "[" << currentTime << "]" << "[RGV]";
 		// do job
-		dest = getDest(*vcnc, *this);
+		if (processNumber == 1)
+			dest = getDest(*vcnc, *this);
+		else if (processNumber == 2)
+			dest = getDest2(*vcnc, *this);
 		startRun();
 
 	}

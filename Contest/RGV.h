@@ -191,9 +191,20 @@ public:
 
 		currentMaterials[pos].endLoadTime = currentTime;
 
-		if (currentMaterials[pos].no != -1)
-			state = Waitclean;
-		else
+		
+			
+		state = Waitclean;
+
+
+
+		/* QUESTION 2 */
+		if (processNumber == 2) {
+			// process 1 finishes
+			if ((*vcnc)[pos].processType == 1)
+				state = Stop;
+		}
+
+		if (currentMaterials[pos].no == -1)
 			state = Stop;   // the first time
 
 		// new material
