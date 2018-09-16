@@ -65,6 +65,9 @@ public:
 
 
 	ofstream file;
+	ofstream scrapped_file; // for QURSTION 3
+
+
 	int materialNumber;
 	vector<Material> currentMaterials;
 	vector<CNC>* vcnc;
@@ -76,7 +79,7 @@ public:
 	{
 		RGVMoveTime = RGVmovetime;
 		CleanTime = cleantime;
-		pos = 1;
+		pos = 2;
 		state = Stop;
 		workRemainTime = 0;
 		dest = nullptr;
@@ -85,7 +88,8 @@ public:
 		waitLoadList = _waitLoadList;
 		processList = _processList;
 		vcnc = _vcnc;
-		file.open("data.csv", ios::out);
+		file.open("materials.csv", ios::out);
+		scrapped_file.open("scrapped_materials.csv", ios::out);
 		materialNumber = 0;
 		currentMaterials = vector<Material>(9);
 		for (auto& m : currentMaterials)

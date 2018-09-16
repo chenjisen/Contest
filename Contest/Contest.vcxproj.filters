@@ -41,5 +41,8 @@
     <ClCompile Include="RGV.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="CNC.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

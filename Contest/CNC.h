@@ -4,8 +4,15 @@
 
 using namespace std;
 
-// the state of CNC: waiting for loading, loading, processing
-enum CNCStateT { Waitload, CNCLoad, Waitprocess, Process};
+
+// get random integer in [min_value, max_value]
+int getRand(int min_value, int max_value);
+
+
+// the state of CNC: waiting for loading, loading, processing,
+// (QUESTION 3) trouble
+
+enum CNCStateT { Waitload, CNCLoad, Waitprocess, Process, Trouble};
 
 class CNC
 {
@@ -22,6 +29,11 @@ public:
 	list<CNC*>* waitLoadList;
 	list<CNC*>* processList;
 	int currentTime;
+
+	/* QUESTION 3 */
+	bool hasTrouble;
+	int troubleArrivalTime;
+	int troubleRemainTime;
 
 
 	void init(int pos, int loadtime, int processtime, int _type,
@@ -45,6 +57,16 @@ public:
 	void updateRemainTime()
 	{
 		--workRemainTime;
+
+		/* QUESTION 3 */
+		if (hasTrouble) {
+			--troubleArrivalTime;
+			if (troubleArrivalTime <= 0) {
+				// get into trouble
+				state = Trouble;
+			}
+		}
+
 	}
 
 	void endWork()
@@ -99,6 +121,19 @@ public:
 		state = Process;
 		processList->push_back(this);
 
+		hasTrouble = false;
+
+		/* QUESTION 3 */
+
+		/*// CNC may have trouble
+		int r = getRand(1, 100);
+		if (r == 1) {
+			// trouble "will" happen
+			hasTrouble = true;
+			troubleArrivalTime = workRemainTime * getRand(1, 100) / 100;
+		}*/
+
+
 	}
 
 	void endProcess()
@@ -110,6 +145,18 @@ public:
 	}
 
 
+	/* QUESTION 3 */
+	void startTrouble()
+	{
+		cout << "[" << currentTime << "][CNC" << Pos << "][TROUBLE!!!]" << endl;
+		troubleRemainTime = getRand(10, 20);
+	}
+
+	void endTrouble()
+	{
+		cout << "[" << currentTime << "][CNC" << Pos << "][END TROUBLE]";
+		state = Waitload;
+	}
 };
 
 

@@ -154,6 +154,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CNC.cpp" />
     <ClCompile Include="Contest.cpp" />
     <ClCompile Include="RGV.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -8,7 +8,7 @@
 		cout << "[" << currentTime << "]" << "[RGV]";
 		// do job
 		if (processNumber == 1)
-			dest = getDest(*vcnc, *this);
+			dest = getDest1(*vcnc, *this);
 		else if (processNumber == 2)
 			dest = getDest2(*vcnc, *this);
 		startRun();
@@ -37,4 +37,12 @@
 			break;
 		}
 	}
+
+	/* QUESTION 3 */
+	for (auto &cnc : *vcnc) {
+		if (cnc.state == Trouble) {
+
+		}
+	}
+
 }
