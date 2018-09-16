@@ -1,12 +1,64 @@
 #pragma once
 
 #include <list>
+#include <string>
 
 using namespace std;
 
 
 // get random integer in [min_value, max_value]
 int getRand(int min_value, int max_value);
+
+struct Material
+{
+	int no;
+
+	int pos_1;
+	int startLoadTime_1;
+	int startUnloadTime_1;
+
+	/* QUESTION 2 */
+	int pos_2_part1;
+	int pos_2_part2;
+	int startLoadTime_2_part1;
+	int startLoadTime_2_part2;
+	int startUnloadTime_2_part1;
+	int startUnloadTime_2_part2;
+
+	/* QUESTION 3 */
+	bool isScrapped;
+
+	Material()
+	{
+		no = pos_1
+			= startLoadTime_1 = startUnloadTime_1
+			= pos_2_part1 = pos_2_part2
+			= startLoadTime_2_part1 = startLoadTime_2_part2
+			= startUnloadTime_2_part1 = startUnloadTime_2_part2
+			= -1;
+
+		isScrapped = false;
+	}
+
+
+	string toString_1()
+	{
+		// 加工物料序号	加工CNC编号	上料开始时间	下料开始时间
+		return to_string(no) + "," + to_string(pos_1) + ","
+			+ to_string(startLoadTime_1) + "," + to_string(startUnloadTime_1) + "\n";
+	}
+
+	string toString_2()
+	{
+		// 加工物料序号	工序1的CNC编号	上料开始时间	下料开始时间	工序2的CNC编号	上料开始时间	下料开始时间
+		return to_string(no) + "," + to_string(pos_2_part1) + ","
+			+ to_string(startLoadTime_2_part1) + "," + to_string(startUnloadTime_2_part1)
+			+ to_string(pos_2_part2) + ","
+			+ to_string(startLoadTime_2_part2) + "," + to_string(startUnloadTime_2_part2)
+			+ "\n";
+	}
+
+};
 
 
 // the state of CNC: waiting for loading, loading, processing,
@@ -33,8 +85,9 @@ public:
 	/* QUESTION 3 */
 	bool hasTrouble;
 	int troubleArrivalTime;
-	int troubleRemainTime;
 
+	vector<Material>::iterator currentMaterial;
+	bool isFirstMaterial;
 
 	void init(int pos, int loadtime, int processtime, int _type,
 		list<CNC*>* _waitLoadList, list<CNC*>* _processList)
@@ -46,6 +99,7 @@ public:
 		waitLoadList = _waitLoadList;
 		processList = _processList;
 		processType = _type;
+		isFirstMaterial = true;
 
 		// init
 		state = Waitload;  
@@ -64,6 +118,9 @@ public:
 			if (troubleArrivalTime <= 0) {
 				// get into trouble
 				state = Trouble;
+
+				// trouble remain time, 10 min ~ 20 min
+				workRemainTime = getRand(600, 1200);
 			}
 		}
 
@@ -149,7 +206,7 @@ public:
 	void startTrouble()
 	{
 		cout << "[" << currentTime << "][CNC" << Pos << "][TROUBLE!!!]" << endl;
-		troubleRemainTime = getRand(10, 20);
+
 	}
 
 	void endTrouble()

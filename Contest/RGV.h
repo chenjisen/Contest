@@ -5,7 +5,7 @@
 
 
 #include <fstream>
-#include <string>
+
 
 
 using namespace std;
@@ -14,38 +14,12 @@ using namespace std;
 // when loading, unloading and cleaning, RGV cannot move
 // wait is similar to stop, but the task has been distributed
 // Stop_2 is used in QUESTION 2
-enum RGVStateT { Stop, Wait, Waitclean, Run, Load, Clean, Stop_2};
 
-struct Material
-{
-	int no;
-	int pos;
-	int startLoadTime;
-	int endLoadTime;
-	int startProcessTime;
-	int endProcessTime;
-	int startUnloadTime;
-	string toString()
-	{
-		// 加工物料序号	加工CNC编号	上料开始时间	下料开始时间
-		return to_string(no) + "," + to_string(pos) + "," + to_string(startLoadTime) + ","
-			+ to_string(startUnloadTime) + "\n";
-	}
-
-	void clear()
-	{
-		no = pos = startLoadTime = endLoadTime = startProcessTime = endProcessTime
-			= startProcessTime = endProcessTime = startUnloadTime
-			= -1;
-
-	}
-};
+enum RGVStateT { Stop, Wait, Waitclean, Run, Load, Clean };
 
 
 class RGV
 {
-private:
-
 
 public:
 	int pos; // position
@@ -62,18 +36,12 @@ public:
 	list<CNC*>* processList;
 	list<CNC*>* waitUnloadList;
 
-
-
-	ofstream file;
-	ofstream scrapped_file; // for QURSTION 3
-
-
-	int materialNumber;
-	vector<Material> currentMaterials;
 	vector<CNC>* vcnc;
-	
 
-	void init(vector<int> RGVmovetime, int cleantime, int processnumber, 
+	vector<Material> vecMaterial;
+	vector<Material>::iterator currentMaterial;
+
+	void init(vector<int> RGVmovetime, int cleantime, int processnumber,
 		list<CNC*>* _waitLoadList, list<CNC*>* _processList,
 		vector<CNC>* _vcnc)
 	{
@@ -88,12 +56,6 @@ public:
 		waitLoadList = _waitLoadList;
 		processList = _processList;
 		vcnc = _vcnc;
-		file.open("materials.csv", ios::out);
-		scrapped_file.open("scrapped_materials.csv", ios::out);
-		materialNumber = 0;
-		currentMaterials = vector<Material>(9);
-		for (auto& m : currentMaterials)
-			m.clear();
 	}
 
 	void startWork();
@@ -164,6 +126,7 @@ public:
 	{
 		cout << "end clean" << endl;
 		state = Stop;
+		nextProcess = 1;
 	}
 
 	void startLoad()
@@ -173,56 +136,146 @@ public:
 		dest->startLoad();
 		workRemainTime = dest->workRemainTime;
 		state = Load;
-		
-		
-		// write previous material
-		if (currentMaterials[pos].no != -1) {
-			// write csv
-			currentMaterials[pos].startUnloadTime = currentTime;
-			file << currentMaterials[pos].toString();
 
+		/* QUESTION 1 */
+		if (processNumber == 1) {
+			updateFile_startLoad_1();
+		}
+		/* QUESTION 2 */
+		else if (processNumber == 2) {
+			updateFile_startLoad_2();
+		}
+	}
+
+	void updateFile_startLoad_1()
+	{
+		
+		// previous material
+		if ((*vcnc)[pos].isFirstMaterial == false) {
+			currentMaterial = (*vcnc)[pos].currentMaterial;
+			currentMaterial->startUnloadTime_1 = currentTime;
 		}
 
 		// new material
-		currentMaterials[pos].pos = pos;
-		currentMaterials[pos].startLoadTime = currentTime;
+		vecMaterial.push_back(Material());
+		currentMaterial = vecMaterial.end() - 1;
+		currentMaterial->pos_1 = pos;
+		currentMaterial->startLoadTime_1 = currentTime;
+		(*vcnc)[pos].currentMaterial = currentMaterial;
 
 	}
+
+	void updateFile_startLoad_2()
+	{
+		if (currentProcess() == 1) {
+			if ((*vcnc)[pos].isFirstMaterial == false) {
+				// previous material
+				currentMaterial = (*vcnc)[pos].currentMaterial;
+				currentMaterial->startUnloadTime_2_part1 = currentTime;
+			}
+
+			// new material
+			vecMaterial.push_back(Material());
+			currentMaterial = vecMaterial.end() - 1;
+			currentMaterial->pos_2_part1 = pos;
+			currentMaterial->startLoadTime_2_part1 = currentTime;
+			(*vcnc)[pos].currentMaterial = currentMaterial;
+
+		}
+
+		if (currentProcess() == 2) {
+
+			auto temp_new_material = currentMaterial;
+
+			if ((*vcnc)[pos].isFirstMaterial == false) {
+				// previous material
+				currentMaterial = (*vcnc)[pos].currentMaterial;
+				currentMaterial->startUnloadTime_2_part2 = currentTime;
+			}
+
+			// new material
+			currentMaterial = temp_new_material;
+			currentMaterial->pos_2_part2 = pos;
+			currentMaterial->startLoadTime_2_part2 = currentTime;
+			(*vcnc)[pos].currentMaterial = currentMaterial;
+
+		}
+	}
+
+
+
 
 	void endLoad()
 	{
 		cout << "end load" << endl;
 
-		currentMaterials[pos].endLoadTime = currentTime;
 
-		
-			
-		state = Waitclean;
+		/* QUESTION 1 */
+		if (processNumber == 1) {
+
+			state = Waitclean;
+
+			if ((*vcnc)[pos].isFirstMaterial) {
+				state = Stop;   // the first time
+				(*vcnc)[pos].isFirstMaterial = false;
+			}
 
 
+		}
 
 		/* QUESTION 2 */
 		if (processNumber == 2) {
+
 			// process 1 finishes
-			if ((*vcnc)[pos].processType == 1)
+			if (currentProcess() == 1) {
+
 				state = Stop;
+				nextProcess = 2;
+
+				// the first time
+				if ((*vcnc)[pos].isFirstMaterial) {
+					(*vcnc)[pos].isFirstMaterial = false;
+					nextProcess = 1;
+				}
+
+			}
+
+
+			// process 2 finishes
+			if (currentProcess() == 2) {
+
+				state = Waitclean;
+				nextProcess = 1;
+
+				// the first time
+				if ((*vcnc)[pos].isFirstMaterial) {
+					(*vcnc)[pos].isFirstMaterial = false;
+					state = Stop;
+				}
+			}
 		}
-
-		if (currentMaterials[pos].no == -1)
-			state = Stop;   // the first time
-
-		// new material
-		++materialNumber;
-		currentMaterials[pos].no = materialNumber;
 
 	}
 
 
 	void updateRemainTime()
 	{
-
 		--workRemainTime;
+	}
 
+	int currentProcess()
+	{
+		return (*vcnc)[pos].processType;
+	}
+
+	void writeFile()
+	{
+		ofstream file;
+		ofstream scrapped_file; // for QURSTION 3
+		file.open("materials.csv", ios::out);
+		scrapped_file.open("scrapped_materials.csv", ios::out);
+		//file << currentMaterials[pos].toString_1();
 
 	}
+
 };
